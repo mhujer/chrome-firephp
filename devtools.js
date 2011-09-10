@@ -90,8 +90,14 @@ ChromeFirePHP._processLogMessage = function(message, context) {
         context.groupStarted = true;
         Console.groupCollapsed(context.pageRef || "");
       }
-      Console.addMessage(Console.Type[type], "%s%o",
-          (meta.Label ? meta.Label + ": " : ""), body);
+      if (typeof(body) != 'object') {
+        Console.addMessage(Console.Type[type], "%s%o",
+          (meta.Label ? meta.Label + ": " : ""), body, "(in " + meta.File + ":" + meta.Line + ")");
+      } else {
+        Console.log("[" + " (in " + meta.File + ":" + meta.Line + ")");
+        this._processLogMessageObject(body, 1);
+        Console.log("]");
+      }
       break;
     case "EXCEPTION":
     case "TABLE":
@@ -101,6 +107,37 @@ ChromeFirePHP._processLogMessage = function(message, context) {
      // FIXME: implement
      break;
   }
+};
+
+/**
+ * Process Object Log Message
+ * @param level Level of the message
+ */
+ChromeFirePHP._processLogMessageObject = function(body, level)
+{
+    for (var ii in body) {
+        if (typeof(body[ii]) == 'object') {
+            level++;
+            Console.log(this._padSpacesForLevel(level) + ii + " => [");
+            this._processLogMessageObject(body[ii], level);
+            Console.log(this._padSpacesForLevel(level) +"]");
+        } else {
+            text = "   " + ii + ' => "' + body[ii] + '"';
+            Console.log(this._padSpacesForLevel(level) + text);
+        }
+    }
+};
+
+/**
+ * It pads spaces for message indention
+ */
+ChromeFirePHP._padSpacesForLevel = function(level)
+{
+    var ret = "";
+    for (i = 1; i < level; i++) {
+        ret = ret + "   ";
+    }
+    return ret;
 };
 
 ChromeFirePHP._buildMessageObjects = function(header_map)
