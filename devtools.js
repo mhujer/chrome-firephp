@@ -101,6 +101,9 @@ ChromeFirePHP._processLogMessage = function(message, context) {
       break;
     case "EXCEPTION":
     case "TABLE":
+        Console.log((meta.Label ? meta.Label : ""));
+        this._processTable(body);
+      break;
     case "TRACE":
     case "GROUP_START":
     case "GROUP_END":
@@ -139,6 +142,56 @@ ChromeFirePHP._padSpacesForLevel = function(level)
     }
     return ret;
 };
+
+ChromeFirePHP._processTable = function(table)
+{
+	var columnsWidths = new Array();
+	for (var rowId in table) {
+		for (var columnId in table[rowId]) {
+			if (table[rowId][columnId] == null) {
+				table[rowId][columnId] = "";
+			}
+			if (typeof(table[rowId][columnId]) == 'object') {
+				table[rowId][columnId] = this._convertObjectToInlineString(table[rowId][columnId], 1);
+			}
+			var length = table[rowId][columnId].length;
+			if (typeof(columnsWidths[columnId]) == 'undefined' || length > columnsWidths[columnId]) {
+				columnsWidths[columnId] = length;
+			}
+		}
+	}
+
+	for (var rowId in table) {
+		var line = "";
+		for (var columnId in table[rowId]) {
+			line += table[rowId][columnId].rpad(' ', columnsWidths[columnId]);
+			if (columnId < (table[rowId].length-1)) {
+				line += " | ";
+			}
+		}
+		Console.log("  " + line);
+	}
+};
+
+ChromeFirePHP._convertObjectToInlineString = function(object, level)
+{
+	for (var ii in object) {
+        if (typeof(object[ii]) == 'object') {
+            level++;
+            return ii + " => [" + this._convertObjectToInlineString(object[ii], level) + "]";
+        } else {
+            return "[" + ii + ' => "' + object[ii] + '"]';
+        }
+    }
+};
+
+//pads right @see http://sajjadhossain.com/2008/10/31/javascript-string-trimming-and-padding/
+String.prototype.rpad = function(padString, length) {
+	var str = this;
+    while (str.length < length)
+        str = str + padString;
+    return str;
+}
 
 ChromeFirePHP._buildMessageObjects = function(header_map)
 {
