@@ -1,2 +1,4 @@
 I wanted to port FirePHP to Chrome using new experimental extension API, but then I realized that inital port of FirePHP already exists in the API samples (http://code.google.com/chrome/extensions/trunk/samples.html#4efa12eaaa442b6b7c880e7a38ceeb0cff7e8b77)
 So I have just tuned it a bit.
+
+More info: http://blog.martinhujer.cz/firephp-for-google-chrome/
