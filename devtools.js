@@ -92,9 +92,9 @@ ChromeFirePHP._processLogMessage = function(message, context) {
       }
       if (typeof(body) != 'object') {
         Console.addMessage(Console.Type[type], "%s%o",
-          (meta.Label ? meta.Label + ": " : ""), body, "(in " + meta.File + ":" + meta.Line + ")");
+          (meta.Label ? meta.Label + ": " : ""), body);
       } else {
-        Console.log("[" + " (in " + meta.File + ":" + meta.Line + ")");
+        Console.log((meta.Label ? meta.Label + ":" : ""), "[");
         this._processLogMessageObject(body, 1);
         Console.log("]");
       }
