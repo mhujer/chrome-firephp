@@ -119,13 +119,17 @@ ChromeFirePHP._processLogMessage = function(message, context) {
 ChromeFirePHP._processLogMessageObject = function(body, level)
 {
     for (var ii in body) {
-        if (typeof(body[ii]) == 'object') {
+        if (typeof(body[ii]) == 'object' && Boolean(body[ii])) {
             level++;
             Console.log(this._padSpacesForLevel(level) + ii + " => [");
             this._processLogMessageObject(body[ii], level);
             Console.log(this._padSpacesForLevel(level) +"]");
         } else {
-            text = "   " + ii + ' => "' + body[ii] + '"';
+            if (!Boolean(body[ii]) && body[ii] != "") {
+                text = "   " + ii + ' => NULL';
+            } else {
+                text = "   " + ii + ' => "' +  body[ii] + '"';
+            }
             Console.log(this._padSpacesForLevel(level) + text);
         }
     }
